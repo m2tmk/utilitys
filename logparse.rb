@@ -9,7 +9,7 @@ def conv_date(str)
 end
 
 def conv_file(fr, fw)
-  s = "/spri/tabid/41/Default.aspx"
+  s = "any string"
   d = /^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d)/
 
   fr.each_line do |line|
