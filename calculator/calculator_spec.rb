@@ -11,6 +11,6 @@ describe Calculator::Interest, "#calc" do
         to = Date.new(2013,3,9)
 
         interest = Calculator::Interest.calc(price, rate, from, to)
-        interest.should == 42164
+        interest.truncate.should == 42164
     end
 end
