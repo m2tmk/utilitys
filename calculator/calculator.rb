@@ -2,42 +2,26 @@
 require 'date'
 
 module Calculator
-  # 金額計算関連
+  # 金利額計算
+  # 金利額 = (元金 * 日数 / 1年間の日数) * 金利
   module Interest
-    # 手数料額の計算
+    # 日数は起算日から満了日までの片端日数とする。
+    # 1年間の日数は365日固定とする。
+    # 計算結果の端数を切捨て
     #
-    # 純粋な金利は、下記のように日割計算で算出される
-    #   金利額 = (元金 * 日数 / １年間の日数) * 金利
-    # しかし、このメソッドでは閏年をまたぐ場合と、毎月27日で締める処理を行う。
-    # なお、締め日は前の期間の金利計算に含まれる
-    #
-    # 引数:
+    # params:
     #   principal  : 元金
     #   rate       : 手数料率(金利)
-    #   cutoff     : 締日
     #   from       : 金利計算の起算日
     #   to         : 金利計算の満了日
-    def self.calc(principal, rate, cutoff_day, from_date, to_date)
-     rate = rate * 0.01
-     # 締日
-     cutoff_date = Date.new(from_date.year, from_date.month, cutoff_day)
-     (principal * one_end(from_date, cutoff_date) / days_of_year(from_date, cutoff_date)) * rate
+    def self.calc(principal, rate, from_date, to_date)
+     interest = (principal * one_end(from_date, to_date)) / 365 * rate
+     interest.truncate
     end
 
-    def self.days_of_year(from, to)
-     if from.leap? && to.leap?
-       366
-     elsif !from.leap? && !to.leap?
-       365
-     end
-    end
-
+    # 片端日数の算出
     def self.one_end(from, to)
      (to - from).to_i
-    end
-
-    def self.both_end(from, to)
-     (to - from).to_i + 1
     end
   end
 end
