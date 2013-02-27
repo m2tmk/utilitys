@@ -15,7 +15,7 @@ module Calculator
     #   days_of_year : 1年間の日数
     #   rate       : 利率(%)
     def self.calc(base, days_of_year, rate)
-      rate *= 0.01
+      rate *= 0.01 # rateを直接変更するのはダサいので、別の値に代入すべきでは？
       (base.to_f / days_of_year.to_f) * rate.to_f
     end
 
