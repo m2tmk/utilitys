@@ -33,12 +33,14 @@ module Calculator
 
     def self.calc_leap(principal, from_date, to_date, rate)
       if from_date.leap? ^ to_date.leap?
+        end_of_year = from_date.end_of_year
+
         t1 = calc(
-                both_end_base(principal, from_date, from_date.end_of_year),
+                one_end_base(principal, from_date, end_of_year),
                 days_of_year(from_date), rate)
 
         t2 = calc(
-                one_end_base(principal, to_date.beginning_of_year, to_date),
+                one_end_base(principal, end_of_year, to_date),
                 days_of_year(to_date), rate)
 
         t1 + t2
@@ -74,7 +76,7 @@ module Calculator
         terms << (block ? block.call(t) : t)
 
         while cutoff_date < to_date
-            from_date = cutoff_date + 1
+            from_date = cutoff_date
 
             cutoff_date = (from_date.beginning_of_month >> 1).change(:day => cutoff_day)
 
@@ -96,9 +98,9 @@ module Calculator
         terms << (block ? block.call(t) : t)
 
         while cutoff_date < to_date
-            from_date = cutoff_date + 1
+            from_date = cutoff_date
 
-            cutoff_date = from_date.end_of_month
+            cutoff_date = (from_date.beginning_of_month >> 1).end_of_month
 
             t = create_range(from_date, to_date, cutoff_date)
 
