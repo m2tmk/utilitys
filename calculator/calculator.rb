@@ -15,8 +15,8 @@ module Calculator
     #   days_of_year : 1年間の日数
     #   rate       : 利率(%)
     def self.calc(base, days_of_year, rate)
-      rate *= 0.01
-      (base.to_f / days_of_year.to_f) * rate.to_f
+      rate_d = rate * 0.01
+      (base.to_f / days_of_year.to_f) * rate_d
     end
 
     def self.one_end_base(principal, from_date, to_date)
