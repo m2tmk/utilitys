@@ -15,8 +15,7 @@ module Calculator
     #   days_of_year : 1年間の日数
     #   rate       : 利率(%)
     def self.calc(base, days_of_year, rate)
-      rate_d = rate * 0.01
-      (base.to_f / days_of_year.to_f) * rate_d
+      (base.to_f / days_of_year.to_f) * (rate * 0.01)
     end
 
     def self.one_end_base(principal, from_date, to_date)
@@ -37,7 +36,7 @@ module Calculator
 
         t1 = calc(
                 one_end_base(principal, from_date, end_of_year),
-                days_of_year(from_date), rate)
+                days_of_year(end_of_year), rate)
 
         t2 = calc(
                 one_end_base(principal, end_of_year, to_date),
@@ -92,7 +91,9 @@ module Calculator
       create_ranges(from_date, to_date, cut_off_date_proc, &block)
     end
 
-    def self.create_ranges(from_date, to_date, cut_off_date_proc, ranges=[], &block)
+    def self.create_ranges(from_date, to_date, cut_off_date_proc, &block)
+      ranges = []
+
       while true
         cut_off_date = cut_off_date_proc.call(from_date)
 
