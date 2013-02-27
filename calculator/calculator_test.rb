@@ -42,8 +42,9 @@ class InterestCalclatorTest < Test::Unit::TestCase
         to = Date.new(2013,3,20)
         min_date = Date.new(2013,2,1)
 
+        p "****"
         terms = Calculator::Interest.terms_by_end_of_month(from, to)
-        terms.select{ |e| e.first >= min_date }.each do |e|
+        terms.select{ |e| e.last >= min_date }.each do |e|
             p e
         end
     end
@@ -128,5 +129,4 @@ class InterestCalclatorTest < Test::Unit::TestCase
         p a
         p "----"
     end
-
 end

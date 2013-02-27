@@ -66,53 +66,48 @@ module Calculator
       both_end(date.beginning_of_year, date.end_of_year)
     end
 
-    def self.terms_by_cutoff_day(from_date, to_date, cutoff_day, &block)
-        terms = []
-
-        cutoff_date = from_date.change(:day => cutoff_day)
-
-        t = create_range(from_date, to_date, cutoff_date)
-
-        terms << (block ? block.call(t) : t)
-
-        while cutoff_date < to_date
-            from_date = cutoff_date
-
-            cutoff_date = (from_date.beginning_of_month >> 1).change(:day => cutoff_day)
-
-            t = create_range(from_date, to_date, cutoff_date)
-
-            terms << (block ? block.call(t) : t)
+    def self.terms_by_cutoff_day(from_date, to_date, cut_off_day, &block)
+      cut_off_date_proc = lambda do |from_date|
+        if from_date.day < cut_off_day
+          from_date.change(:day => cut_off_day)
+        else
+          (from_date.beginning_of_month >> 1).change(:day => cut_off_day)
         end
+      end
 
-        terms
+      create_ranges(from_date, to_date, cut_off_date_proc, &block)
     end
 
     def self.terms_by_end_of_month(from_date, to_date, &block)
-        terms = []
+      cut_off_date_proc = lambda do |from_date|
+        eom = from_date.end_of_month
 
-        cutoff_date = from_date.end_of_month
-
-        t = create_range(from_date, to_date, cutoff_date)
-
-        terms << (block ? block.call(t) : t)
-
-        while cutoff_date < to_date
-            from_date = cutoff_date
-
-            cutoff_date = (from_date.beginning_of_month >> 1).end_of_month
-
-            t = create_range(from_date, to_date, cutoff_date)
-
-            terms << (block ? block.call(t) : t)
+        if from_date.day < eom.day
+          eom
+        else
+          (from_date.beginning_of_month >> 1).end_of_month
         end
+      end
 
-        terms
+      create_ranges(from_date, to_date, cut_off_date_proc, &block)
     end
 
-    def self.create_range(from, to, cut_off)
-        cut_off = to if to <= cut_off
-        Range.new(from, cut_off, true)
+    def self.create_ranges(from_date, to_date, cut_off_date_proc, ranges=[], &block)
+      while true
+        cut_off_date = cut_off_date_proc.call(from_date)
+
+        if to_date <= cut_off_date
+          return ranges << create_range(from_date, to_date, &block)
+        else
+          ranges << create_range(from_date, cut_off_date, &block)
+          from_date = cut_off_date
+        end
+      end
+    end
+
+    def self.create_range(from, to, &block)
+      r = Range.new(from, to, true)
+      (block ? block.call(r) : r)
     end
   end
 end
