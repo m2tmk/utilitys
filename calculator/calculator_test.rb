@@ -47,4 +47,41 @@ class InterestCalclatorTest < Test::Unit::TestCase
             p e
         end
     end
+
+    def test_calc_leap1
+        principal = 1000000
+        rate = 3.6 
+        from = Date.new(2012,12,10)
+        to = Date.new(2013,1,27)
+
+        p Calculator::Interest.calc_leap(principal, from, to, rate)
+        p Calculator::Interest.calc_365(principal, from, to, rate)
+    end
+
+    def test_calc_leap2
+        principal = 1000000
+        rate = 3.6 
+        from = Date.new(2012,12,10)
+        to = Date.new(2012,12,31)
+
+        p Calculator::Interest.calc(
+            Calculator::Interest.both_end_base(principal, from, to), 366, rate)
+        p Calculator::Interest.calc(
+            Calculator::Interest.both_end_base(principal, from, to), 365, rate)
+    end
+
+    def test_calc_leap3
+        principal = 1000000
+        rate = 3.6 
+        from = Date.new(2013,1,1)
+        to = Date.new(2013,1,27)
+
+        doy = Calculator::Interest.days_of_year(to)
+
+        p Calculator::Interest.calc(
+            Calculator::Interest.one_end_base(principal, from, to), 365, rate)
+    end
+
+    def test_calc1
+    end
 end
