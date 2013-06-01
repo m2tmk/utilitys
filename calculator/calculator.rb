@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-require 'date'
 require 'active_support/core_ext/date/calculations'
 require 'active_support/core_ext/date_time/calculations'
 require 'active_support/core_ext/time/calculations'
@@ -26,34 +25,45 @@ module Calculator
      (to - from).to_i
     end
 
-    def self.parse(from_date, to_date, cutoff_day)# -> Terms
+    def self.terms_by_cutoff_day(from_date, to_date, cutoff_day)
         terms = []
 
         cutoff_date = from_date.change(:day => cutoff_day)
 
-        terms << Range.new(from_date, cutoff_date, true)
+        terms << create_range(from_date, to_date, cutoff_date)
 
         while cutoff_date < to_date
             from_date = cutoff_date + 1
 
             cutoff_date = (from_date.beginning_of_month >> 1).change(:day => cutoff_day)
-            cutoff_date = to_date if to_date <= cutoff_date
 
-            terms << Range.new(from_date, cutoff_date, true)
+            terms << create_range(from_date, to_date, cutoff_date)
         end
 
         terms
     end
-  end
 
-  class Rule
-    attr_reader :principal, :rate, :from_date, :to_date
+    def self.terms_by_end_of_month(from_date, to_date)
+        terms = []
 
-    def initialize(principal, rate, from_date, to_date)
-        @principal = principal
-        @rate = rate
-        @from_date = from_date
-        @to_date = to_date
+        cutoff_date = from_date.end_of_month
+
+        terms << create_range(from_date, to_date, cutoff_date)
+
+        while cutoff_date < to_date
+            from_date = cutoff_date + 1
+
+            cutoff_date = from_date.end_of_month
+
+            terms << create_range(from_date, to_date, cutoff_date)
+        end
+
+        terms
+    end
+
+    def self.create_range(from, to, cut_off)
+        cut_off = to if to <= cut_off
+        Range.new(from, cut_off, true)
     end
   end
 end
